@@ -26,28 +26,12 @@ var timer = duration, minutes, seconds,milliseconds;
 minutesInit =parseInt(10,10);
 secondsInit =parseInt(0,10);
 duration =  (minutesInit*60000)+(secondsInit*1000);
-/*
+
 fs.readFile('setting.json', 'utf8', function (err, data) {
     if (err) return console.log(err);    
     setting= JSON.parse(data);
     initSocket();  
 });
-*/
-function initSetting(){
-	axios.get('http://ywc.in.th/timePresent/client.json')
-	  .then(function (response) {
-		console.log(response);
-		setting = response.data;
-		initSocket();  
-	  })
-	  .catch(function (error) {
-		console.log(error);
-	  });
-}     
-
-      
-   
-
 
 function initSocket() {
 var socket = require('socket.io-client').connect('http://'+setting.server+':'+setting.port,{ reconnect: true }); 
@@ -83,7 +67,7 @@ socket.on('connect', function() {
 });
 }
 
-initSetting();
+//initSetting();
 
 btnStart.addEventListener('click',function(){
     //timer =duration;

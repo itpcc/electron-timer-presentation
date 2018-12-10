@@ -1,40 +1,16 @@
 {
-  "name": "electron-timer-presentation-server",
+  "name": "ETP_server",
   "version": "0.0.1",
-  "description": "timer-presentation-server",
-  "main": "main.js",
-  "scripts": {
-    "start": "electron .",
-    "dist": "build --x64 --ia32",
-	"dist-mac" : "build --mac"
-  },
-  "repository": "https://github.com/pichetnk/electron-timer-presentation",
-  "keywords": [
-    "Electron",
-    "presentation",
-    "timer"
-  ],
-  "author": "Pichet Wongbuakaew <pichet.nk@gmail.com>",
+  "description": "Electron timer presentation: server using socket.io",
+  "main": "index.js",
+  "author": "Rachasak Ragkamnerd",
+  "private": true,
   "license": "MIT",
-  "devDependencies": {
-    "electron": "^1.4.1",
-    "electron-prebuilt": "^1.4.12",
-    "electron-builder": "^10.9.3"
-  },
   "dependencies": {
-    "axios": "^0.16.1",
-    "socket.io": "^1.7.2"
+    "express": "^4.13.4",
+    "socket.io": "^2.2.0"
   },
-  "build": {
-    "appId": "com.pichet.timerclient",
-    "mac": {
-      "category": "public.app-category.utilities"
-    },
-    "win": {
-      "title": "Timer Client",
-      "version": "0.0.1",
-      "authors": "Pichet Wongbuakaew",
-      "iconUrl": "images/icon.png"
-    }
+  "scripts": {
+    "start": "node index.js"
   }
 }

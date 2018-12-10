@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
+	<title>ระบบจับเวลา</title>
+
+	<!-- CSS  -->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+	<link href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+</head>
+<body class="mode__editor">
+	<div class="section no-pad-bot section-clock">
+		<div class="container-fluid">
+			<h1 class="header center black-text clock-display"><span class="minute">00</span><span class="second">00</span><span class="millisec">00</span></h1>
+		</div>
+	</div>
+
+	<div class="container section-editor">
+		<div class="section">
+			<!--   Controller Section   -->
+			<div class="row viewer__hide">
+				<form class="col s12">
+					<div class="row">
+						<div class="input-field col s12 m7">
+							<textarea id="remote-displaytext" class="materialize-textarea"></textarea>
+							<label for="remote-displaytext">ข้อความ (แสดงบนหน้าจอ monitor)</label>
+						</div>
+						<div class="col s12 m5">
+							<div class="row">
+								<div class="col s12">
+									ตั้งเวลา
+									<div class="input-field inline">
+										<input id="remote-time_minute" type="number" min="0" max="59" class="validate remote-time" value="00">
+										<label for="remote-time_minute">นาที</label>
+									</div>
+									:
+									<div class="input-field inline">
+										<input id="remote-time_second" type="number" min="0" max="59" class="validate remote-time" value="00">
+										<label for="remote-time_second">วินาที</label>
+									</div>
+								</div>
+							</div>
+							<div class="row center-align">
+								<a class="waves-effect waves-light btn disabled" id="remote-btn_set">  <i class="material-icons left">add_alarm</i> ตั้ง</a>
+								<a class="waves-effect waves-light btn disabled" id="remote-btn_start"><i class="material-icons left">play_arrow</i>เริ่ม</a>
+								<a class="waves-effect waves-light btn disabled" id="remote-btn_pause"><i class="material-icons left">pause</i>     พัก</a>
+								<a class="waves-effect waves-light btn disabled" id="remote-btn_stop"> <i class="material-icons left">stop</i>      ตั้งใหม่</a>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid viewer__show section-message">
+		<div class="row">
+			<div class="col s10 offset-s1">
+				<p id="remote-message_display" class="remote-message_display"></p>
+			</div>
+		</div>
+	</div>
+
+	<div class="fixed-action-btn">
+		<a class="btn-floating btn-large blue" id="remote-toggle_view">
+			<i class="large material-icons viewer__show">mode_edit</i>
+			<i class="large material-icons viewer__hide">visibility</i>
+		</a>
+	</div>
+
+	<!--  Scripts-->
+	<script src="js/materialize.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.slim.js" integrity="sha256-RtMTraB5gGlLER0FkKBcaXCmZCQCxkKS/dXm7MSEoEY=" crossorigin="anonymous"></script>
+	<script src="js/fit-text.js"></script>
+	<script src="js/init.js"></script>
+
+	</body>
+</html>

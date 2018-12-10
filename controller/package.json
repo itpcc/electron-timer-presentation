@@ -1,11 +1,11 @@
 {
-  "name": "electron-timer-presentation-client",
+  "name": "electron-timer-presentation-server",
   "version": "0.0.1",
-  "description": "timer-presentation-client",
+  "description": "timer-presentation-server",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "dist": "build --win --x64 --ia32",
+    "dist": "build --x64 --ia32",
     "dist-mac": "build --mac"
   },
   "repository": "https://github.com/pichetnk/electron-timer-presentation",
@@ -23,7 +23,6 @@
   },
   "dependencies": {
     "axios": "^0.16.1",
-    "express": "^4.14.0",
     "socket.io": "^2.2.0"
   },
   "build": {

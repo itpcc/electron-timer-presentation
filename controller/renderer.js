@@ -17,17 +17,17 @@ let txtMinutes = document.getElementById('txtMinutes');
 let txtSecond  = document.getElementById('txtSecond');
 
 var setting;
-/*
+
 fs.readFile('setting.json', 'utf8', function (err, data) {
     if (err) return console.log(err);    
     setting= JSON.parse(data);
     initSocket();  
    
 });
-*/
 
-function initSetting(){
-	axios.get('http://ywc.in.th/timePresent/server.json')
+
+/*function initSetting(){
+	axios.get('http://localhost:3000/timePresent/server.json')
 	  .then(function (response) {
 		console.log(response);
 		setting = response.data;
@@ -36,12 +36,14 @@ function initSetting(){
 	  .catch(function (error) {
 		console.log(error);
 	  });
-}     
+}    */ 
 
 function initSocket(){
 
      server.listen(setting.port);
+     console.log("Listening in port", setting.port);
      io.on('connection', function(socket){
+        console.log("New connection");
      socket.on('event', function(data){});
         socket.on('disconnect', function(){
             console.log('gone');
@@ -57,18 +59,22 @@ function initSocket(){
 initSetting();
 
 btnStart.addEventListener('click',function(){   
+    console.log("btnStart");
     io.emit('timer-event', { code: '01',codeDesc:'timeStart' });   
 });
 
 btnStop.addEventListener('click',function(){
+    console.log("btnStop");
      io.emit('timer-event', { code: '02',codeDesc:'timeStop' });
 });
 
 btnReset.addEventListener('click',function(){
+    console.log("btnReset");
      io.emit('timer-event', { code: '03',codeDesc:'timeReset' });
 });
 
 btnSet.addEventListener('click',function(){
+    console.log("btnSet");
   io.emit('timer-event', {code: '00',codeDesc:'timeUpdate', minutes: txtMinutes.value,second:txtSecond.value });
 });
 

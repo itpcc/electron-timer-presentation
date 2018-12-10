@@ -1,0 +1,47 @@
+/* Custom Stylesheet */
+/**
+ * Use this file to override Materialize files so you can update
+ * the core Materialize files in the future
+ *
+ * Made By MaterializeCSS.com
+ */
+
+body.mode__viewer .viewer__hide,
+body.mode__editor .viewer__show{
+	display: none;
+}
+.icon-block {
+  padding: 0 15px;
+}
+.icon-block .material-icons {
+	font-size: inherit;
+}
+
+.section-clock,
+.section-editor
+.section-message{
+	padding: 0;
+	margin: 0;
+	height: 50vh;
+}
+
+.clock-display{
+	font-size: 20vw;
+	font-family: 'Courier new', sans-serif;
+}
+
+.clock-display .minute:after{
+	content: ":";
+}
+.clock-display .second:after{
+	content: ".";
+}
+
+.timeup{
+	background: red;
+}
+
+.remote-message_display{
+	margin: 0;
+	text-align: center;
+}
