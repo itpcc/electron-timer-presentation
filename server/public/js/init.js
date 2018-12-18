@@ -3,9 +3,9 @@ window.__FINISH_TIME__ = null;
 
 function ready(fn) {
 	if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading"){
-	fn();
+		fn();
 	} else {
-	document.addEventListener('DOMContentLoaded', fn);
+		document.addEventListener('DOMContentLoaded', fn);
 	}
 }
 
@@ -43,16 +43,18 @@ ready(function(){
 		setRemoteBtnClass('remote-btn_pause', (!!states[2])?'enable':'disable');
 		setRemoteBtnClass('remote-btn_stop',  (!!states[3])?'enable':'disable');
 
-		setInputAttr('remote-time_second', !!states[0]?'enable':'disable');
+		setInputAttr('remote-time_hour',   !!states[0]?'enable':'disable');
 		setInputAttr('remote-time_minute', !!states[0]?'enable':'disable');
+		setInputAttr('remote-time_second', !!states[0]?'enable':'disable');
 	}
 
 	function isTimeEmpty(data){
 		console.log("isTimeEmpty", data);
-		return !data.minute && !data.second;
+		return !data.hour && !data.minute && !data.second;
 	}
 
 	function setUpDurationTime(data, enableBtn){
+		document.querySelector(".clock-display .hour")    .innerText = Number(data.hour     || 0)             .toFixed(0).padStart(2,'0');
 		document.querySelector(".clock-display .minute")  .innerText = Number(data.minute   || 0)             .toFixed(0).padStart(2,'0');
 		document.querySelector(".clock-display .second")  .innerText = Number(data.second   || 0)             .toFixed(0).padStart(2,'0');
 		document.querySelector(".clock-display .millisec").innerText = Number(parseInt(data.millisec || 0)/10).toFixed(0).substr(0, 2).padStart(2,'0');
@@ -89,6 +91,7 @@ ready(function(){
 		setUpDurationTime(data);
 		// Set finish line
 		window.__FINISH_TIME__ = new Date();
+		window.__FINISH_TIME__.setHours       (window.__FINISH_TIME__.getHours()        + Number(data.hour || 0));
 		window.__FINISH_TIME__.setMinutes     (window.__FINISH_TIME__.getMinutes()      + Number(data.minute || 0));
 		window.__FINISH_TIME__.setSeconds     (window.__FINISH_TIME__.getSeconds()      + Number(data.second || 0));
 		window.__FINISH_TIME__.setMilliseconds(window.__FINISH_TIME__.getMilliseconds() + Number(data.millisec || 0));
@@ -98,9 +101,10 @@ ready(function(){
 			var timeDiffMillisec = window.__FINISH_TIME__ - (new Date());
 			if(timeDiffMillisec > 0){
 				setUpDurationTime({
-					minute:  parseInt((timeDiffMillisec) / ( 1000 * 60 )),
-					second:  parseInt(timeDiffMillisec  /   1000) % 60,
-					millisec: timeDiffMillisec  %   1000
+					hour:   parseInt((timeDiffMillisec) / ( 1000  * 60    * 60)),
+					minute: parseInt((timeDiffMillisec) / ( 1000  * 60 )) % 60,
+					second: parseInt( timeDiffMillisec  /   1000) % 60,
+					millisec:         timeDiffMillisec  %   1000
 				});
 			}else{
 				document.body.classList.add("timeup");
@@ -152,6 +156,11 @@ ready(function(){
 	socket.on('currentStatus', function(data){
 		onClockStateUpdate(data);
 		onMessageUpdate(data.message);
+		if(!!data.timeSet){
+			document.getElementById('remote-time_hour').value = data.timeSet.hour;
+			document.getElementById('remote-time_minute').value = data.timeSet.minute;
+			document.getElementById('remote-time_second').value = data.timeSet.second;
+		}
 		M.updateTextFields();
 	});
 	socket.on('timer-event', onClockStateUpdate);
@@ -173,11 +182,14 @@ ready(function(){
 		}
 	}
 
+	document.querySelector(".remote-time").addEventListener("focus", function(e){
+		e.target.select();
+	});
+	document.getElementById("remote-time_hour").addEventListener("keydown", function(e){
+		skipToNext(e, "remote-time_minute");
+	});
 	document.getElementById("remote-time_minute").addEventListener("keydown", function(e){
 		skipToNext(e, "remote-time_second");
-	});
-	document.getElementById("remote-time_minute").addEventListener("focus", function(e){
-		e.target.select();
 	});
 	document.getElementById("remote-time_second").addEventListener("keydown", function(e){
 		var btnEl = document.getElementById('remote-btn_set');
@@ -193,11 +205,13 @@ ready(function(){
 	}
 
 	remoteAction('remote-btn_set', function(e){
+		var txtHours   = document.getElementById('remote-time_hour');
 		var txtMinutes = document.getElementById('remote-time_minute');
 		var txtSecond  = document.getElementById('remote-time_second');
 		var data = {
 			code: '00',
 			codeDesc:'timeUpdate', 
+			hour:   parseInt(txtHours.value), 
 			minute: parseInt(txtMinutes.value), 
 			second: parseInt(txtSecond.value), 
 			millisec: 0 
@@ -205,7 +219,14 @@ ready(function(){
 		if(isTimeEmpty(data)){
 			alert("Time must not empty");
 		}else{
-			socket.emit('timer-event', {code: '00',codeDesc:'timeUpdate', minute: txtMinutes.value, second:txtSecond.value, millisec: 0 });
+			socket.emit('timer-event', {
+				code: '00',
+				codeDesc:'timeUpdate', 
+				hour: txtHours.value, 
+				minute: txtMinutes.value, 
+				second:txtSecond.value, 
+				millisec: 0 
+			});
 		}
 	});
 

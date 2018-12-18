@@ -26,10 +26,11 @@ body.mode__editor .viewer__show{
 }
 
 .clock-display{
-	font-size: 20vw;
+	font-size: calc( 20vw * 3 / 4 );
 	font-family: 'Courier new', sans-serif;
 }
 
+.clock-display .hour:after,
 .clock-display .minute:after{
 	content: ":";
 }
@@ -39,6 +40,10 @@ body.mode__editor .viewer__show{
 
 .timeup{
 	background: red;
+}
+
+.remote-time_wrapper .input-field{
+	width: 5rem;
 }
 
 .remote-message_display{

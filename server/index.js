@@ -30,7 +30,8 @@ io.on('connection', (socket) => {
 		console.log(timeDiffMillisec)
 		if(timeDiffMillisec > 0){
 			return Object.assign(currentState, {
-				minute:  parseInt((timeDiffMillisec) / ( 1000 * 60 )),
+				hour:    parseInt((timeDiffMillisec) / ( 1000 * 60    * 60)),
+				minute:  parseInt((timeDiffMillisec) / ( 1000 * 60 )) % 60,
 				second:  parseInt(timeDiffMillisec  /   1000) % 60,
 				millisec: timeDiffMillisec  %   1000
 			});
@@ -40,16 +41,17 @@ io.on('connection', (socket) => {
 	}
 
 	socket.on('timer-event', (data) => {
-		console.log('timer-event <', data, typeof data.minute);	
+		console.log('timer-event <', data);	
 		if(data.code === '01'){ // Start
 			console.log("currentState", currentState.code);
 			if(currentState.code !== '00' && currentState.code !== '02')
 				return socket.emit('onError', { message: 'Time must set before start' });
 
 			currentFinishTime = new Date();
-			currentFinishTime.setMinutes     (currentFinishTime.getMinutes()      + (parseInt(currentState.minute   ) || 0));
-			currentFinishTime.setSeconds     (currentFinishTime.getSeconds()      + (parseInt(currentState.second   ) || 0));
-			currentFinishTime.setMilliseconds(currentFinishTime.getMilliseconds() + (parseInt(currentState.millisec ) || 0));
+			currentFinishTime.setHours       (currentFinishTime.getHours()        + (parseInt(currentState.hour    ) || 0));
+			currentFinishTime.setMinutes     (currentFinishTime.getMinutes()      + (parseInt(currentState.minute  ) || 0));
+			currentFinishTime.setSeconds     (currentFinishTime.getSeconds()      + (parseInt(currentState.second  ) || 0));
+			currentFinishTime.setMilliseconds(currentFinishTime.getMilliseconds() + (parseInt(currentState.millisec) || 0));
 			console.log("currentFinishTime", currentFinishTime);
 
 			currentState = Object.assign(currentState, data);
@@ -61,6 +63,14 @@ io.on('connection', (socket) => {
 			currentFinishTime = null;
 		}else{
 			currentState = data;
+			if(data.code === '00'){
+				currentState.timeSet = {
+					"hour":     parseInt(currentState.hour     ) || 0,
+					"minute":   parseInt(currentState.minute   ) || 0,
+					"second":   parseInt(currentState.second   ) || 0,
+					"millisec": parseInt(currentState.millisec ) || 0
+				}
+			}
 		}
 		console.log('timer-event >', currentState);
 		socket.broadcast.emit('timer-event', currentState);
