@@ -25,17 +25,29 @@ body.mode__editor .viewer__show{
 	height: 50vh;
 }
 
-.clock-display{
-	font-size: calc( 20vw * 3 / 4 );
+.clock-display {
+	font-size: 180px;
 	font-family: 'Courier new', sans-serif;
 }
 
-.clock-display .hour:after,
-.clock-display .minute:after{
-	content: ":";
+.clock-separator {
+	color: #5a5ba0;
+	font-size: 160px;
+	display: inline-block;
+	margin: -100px;
+	transform: translateY(-25px);
+
+	font-family: "Kanit";
 }
-.clock-display .second:after{
-	content: ".";
+
+.hour, .minute, .second, .millisec {
+	color: white;
+	background: url(/assets/time-box.svg) repeat-x;
+	width: 280px;
+	letter-spacing: 20px;
+	display: inline-block;
+	background-size: 140px;
+	padding-left: 20px;
 }
 
 .timeup{
@@ -48,9 +60,9 @@ body.mode__editor .viewer__show{
 
 .remote-message_display{
 	margin: 0;
+	padding: 15px;
 	text-align: center;
 	font-size: 40px!important;
-	padding: 15px;
 	font-family: 'Kanit', sans-serif;
 	background: url(/assets/text-box.svg) no-repeat center center;
 }
