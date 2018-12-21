@@ -67,8 +67,23 @@ body.mode__editor .viewer__show{
 	padding-left: 20px;
 }
 
-.timeup{
-	background: red;
+.darkmode {
+	animation-name: darkmode;
+	animation-duration: 0.5s;
+	animation-iteration-count: infinite;
+}
+
+@keyframes darkmode {
+	from {
+		background: linear-gradient(white 10%, #555 100%);
+	}
+	to {
+		background: linear-gradient(white 10%,crimson 100%);
+	}
+}
+
+.timeup {
+	background: linear-gradient(white 40%,salmon 100%)!important;
 }
 
 .remote-time_wrapper .input-field{
