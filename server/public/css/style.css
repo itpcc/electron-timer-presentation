@@ -5,6 +5,10 @@
  *
  * Made By MaterializeCSS.com
  */
+body {
+	height: 100vh;
+	background: linear-gradient(white 40%, #cfcffb 100%);
+}
 
 body.mode__viewer .viewer__hide,
 body.mode__editor .viewer__show{
@@ -15,6 +19,14 @@ body.mode__editor .viewer__show{
 }
 .icon-block .material-icons {
 	font-size: inherit;
+}
+
+.logo {
+	width: 350px;
+	height: 200px;
+	margin: 30px auto;
+	background: url(/assets/logo.svg) no-repeat center center;
+	background-size: 100% auto;
 }
 
 .section-clock,
