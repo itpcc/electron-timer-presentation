@@ -12,6 +12,10 @@ function ready(fn) {
 ready(function(){
 	const socket = io();
 
+	if (localStorage.getItem("password") !== null) {
+		authen(localStorage.getItem("password"));
+	}
+
 	function authen(password) {
 		localStorage.setItem("password", password);
 		

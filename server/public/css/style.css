@@ -68,7 +68,7 @@ body.mode__editor .viewer__show{
 }
 
 .timeup{
-	background: red;
+	background: linear-gradient(white 40%,salmon 100%);
 }
 
 .remote-time_wrapper .input-field{
