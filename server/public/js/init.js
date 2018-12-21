@@ -49,7 +49,6 @@ ready(function(){
 	}
 
 	function setRemoteBtnState(states){
-		console.log("setRemoteBtnState(states)", states)
 		setRemoteBtnClass('remote-btn_set',   (!!states[0])?'enable':'disable');
 		setRemoteBtnClass('remote-btn_start', (!!states[1])?'enable':'disable');
 		setRemoteBtnClass('remote-btn_pause', (!!states[2])?'enable':'disable');
@@ -61,7 +60,6 @@ ready(function(){
 	}
 
 	function isTimeEmpty(data){
-		console.log("isTimeEmpty", data);
 		return !data.hour && !data.minute && !data.second;
 	}
 
@@ -107,7 +105,6 @@ ready(function(){
 		window.__FINISH_TIME__.setMinutes     (window.__FINISH_TIME__.getMinutes()      + Number(data.minute || 0));
 		window.__FINISH_TIME__.setSeconds     (window.__FINISH_TIME__.getSeconds()      + Number(data.second || 0));
 		window.__FINISH_TIME__.setMilliseconds(window.__FINISH_TIME__.getMilliseconds() + Number(data.millisec || 0));
-		console.log("__FINISH_TIME__", window.__FINISH_TIME__);
 
 		window.__TIME_RUNNER_INTERVAL__ = window.setInterval(function(){
 			var timeDiffMillisec = window.__FINISH_TIME__ - (new Date());
@@ -128,6 +125,10 @@ ready(function(){
 		document.body.classList.remove("timeup");
 	}
 
+	socket.on('onError', function(err) {
+		console.error(err)
+	});
+
 	socket.on('connect', function() { 
 		onConnectSocket();
 		console.log('Connected to server.'); 
@@ -143,7 +144,6 @@ ready(function(){
 	});
 
 	function onClockStateUpdate(data){
-		console.log("Update: ", data)
 		switch(data.code){
 			case '00':
 				setUpDurationTime(data, true);
@@ -271,6 +271,6 @@ ready(function(){
 
 	M.AutoInit();
 
-	window.authen = authen
+	window.authen = authen;
 	window.fitText(document.getElementById('remote-message_display'));
 });
