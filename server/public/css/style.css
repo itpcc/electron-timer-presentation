@@ -78,3 +78,29 @@ body.mode__editor .viewer__show{
 	font-family: 'Kanit', sans-serif;
 	background: url(/assets/text-box.svg) no-repeat center center;
 }
+
+.sponsors {
+	margin: auto auto;
+	width: 400px;
+	background: white;
+	padding: 15px;
+	position: relative;
+
+	transform: translateY(-140px);
+}
+.sponsors::before, .sponsors::after {
+	content: "";
+	display: block;
+	width: 105px;
+	height: 105px;
+	background: white;
+	border-radius: 50%;
+	position: absolute;
+	z-index: -10;
+}
+.sponsors::before {
+	transform: translateX(-60px) translateY(-15px);
+}
+.sponsors::after {
+	transform: translateX(325px) translateY(-90px);
+}
