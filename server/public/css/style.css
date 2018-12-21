@@ -5,6 +5,10 @@
  *
  * Made By MaterializeCSS.com
  */
+body {
+	height: 100vh;
+	background: linear-gradient(white 40%, #cfcffb 100%);
+}
 
 body.mode__viewer .viewer__hide,
 body.mode__editor .viewer__show{
@@ -17,6 +21,14 @@ body.mode__editor .viewer__show{
 	font-size: inherit;
 }
 
+.logo {
+	width: 350px;
+	height: 200px;
+	margin: 30px auto;
+	background: url(/assets/logo.svg) no-repeat center center;
+	background-size: 100% auto;
+}
+
 .section-clock,
 .section-editor
 .section-message{
@@ -25,17 +37,29 @@ body.mode__editor .viewer__show{
 	height: 50vh;
 }
 
-.clock-display{
-	font-size: calc( 20vw * 3 / 4 );
+.clock-display {
+	font-size: 180px;
 	font-family: 'Courier new', sans-serif;
 }
 
-.clock-display .hour:after,
-.clock-display .minute:after{
-	content: ":";
+.clock-separator {
+	color: #5a5ba0;
+	font-size: 160px;
+	display: inline-block;
+	margin: -100px;
+	transform: translateY(-25px);
+
+	font-family: "Kanit";
 }
-.clock-display .second:after{
-	content: ".";
+
+.hour, .minute, .second, .millisec {
+	color: white;
+	background: url(/assets/time-box.svg) repeat-x;
+	width: 280px;
+	letter-spacing: 20px;
+	display: inline-block;
+	background-size: 140px;
+	padding-left: 20px;
 }
 
 .timeup{
@@ -48,5 +72,35 @@ body.mode__editor .viewer__show{
 
 .remote-message_display{
 	margin: 0;
+	padding: 15px;
 	text-align: center;
+	font-size: 40px!important;
+	font-family: 'Kanit', sans-serif;
+	background: url(/assets/text-box.svg) no-repeat center center;
+}
+
+.sponsors {
+	margin: auto auto;
+	width: 400px;
+	background: white;
+	padding: 15px;
+	position: relative;
+
+	transform: translateY(-140px);
+}
+.sponsors::before, .sponsors::after {
+	content: "";
+	display: block;
+	width: 105px;
+	height: 105px;
+	background: white;
+	border-radius: 50%;
+	position: absolute;
+	z-index: -10;
+}
+.sponsors::before {
+	transform: translateX(-60px) translateY(-15px);
+}
+.sponsors::after {
+	transform: translateX(325px) translateY(-90px);
 }
