@@ -12,9 +12,16 @@ function ready(fn) {
 ready(function(){
 	const socket = io();
 
+	function authen(password) {
+		localStorage.setItem("password", password);
+		
+		document.querySelector(".section-editor").style = "display: block";
+		document.querySelector(".fixed-action-btn").style = "display: block";
+	}
+
 	function emitMessage(pipe, state) {
 		const authenPassword = localStorage.getItem("password") || "secret";
-		socket.emit(pipe, {...state, authenPassword})
+		socket.emit(pipe, {...state, authenPassword});
 	}
 
 	function onConnectSocket(){
@@ -264,5 +271,6 @@ ready(function(){
 
 	M.AutoInit();
 
+	window.authen = authen
 	window.fitText(document.getElementById('remote-message_display'));
 });

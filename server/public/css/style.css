@@ -10,6 +10,11 @@ body {
 	background: linear-gradient(white 40%, #cfcffb 100%);
 }
 
+/* Show after authentication */
+.section-editor, .fixed-action-btn {
+	display: none;
+}
+
 body.mode__viewer .viewer__hide,
 body.mode__editor .viewer__show{
 	display: none;
