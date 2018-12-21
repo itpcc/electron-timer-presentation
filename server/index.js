@@ -43,7 +43,6 @@ io.on('connection', (socket) => {
 	}
 
 	socket.on('timer-event', (data) => {
-		console.log("EIOEI", data)
 		if (data.authenPassword === undefined || data.authenPassword !== PASSWORD) {
 			return socket.emit('onError', { message: 'Authentication Error' });
 		}
@@ -84,14 +83,17 @@ io.on('connection', (socket) => {
 		socket.broadcast.emit('timer-event', currentState);
 		socket.emit('timer-event', currentState);
 	});
-	socket.on('message', (msg) => {
-		msg = msg.trim();
+	socket.on('message', (data) => {
+		if (data.authenPassword === undefined || data.authenPassword !== PASSWORD) {
+			return socket.emit('onError', { message: 'Authentication Error' });
+		}
+
+		const msg = data.message.trim();
 		if(msg !== currentMessage){
 			currentMessage = msg;
 			socket.broadcast.emit('message', currentMessage);
 			socket.emit('message', currentMessage);
 		}
-
 	})
 	socket.on('currentStatus', () => {
 		let resp;

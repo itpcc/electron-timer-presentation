@@ -248,7 +248,7 @@ ready(function(){
 	});
 
 	document.getElementById('remote-displaytext').addEventListener('keyup', function(e){
-		socket.emit('message', e.target.value);
+		emitMessage('message', {message: e.target.value});
 	});
 
 	document.getElementById('remote-toggle_view').addEventListener('click', function(e){
