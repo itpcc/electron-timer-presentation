@@ -12,6 +12,18 @@ function ready(fn) {
 ready(function(){
 	const socket = io();
 
+	function authen(password) {
+		localStorage.setItem("password", password);
+		
+		document.querySelector(".section-editor").style = "display: block";
+		document.querySelector(".fixed-action-btn").style = "display: block";
+	}
+
+	function emitMessage(pipe, state) {
+		const authenPassword = localStorage.getItem("password") || "secret";
+		socket.emit(pipe, {...state, authenPassword});
+	}
+
 	function onConnectSocket(){
 		socket.emit('currentStatus');
 	}
@@ -37,7 +49,6 @@ ready(function(){
 	}
 
 	function setRemoteBtnState(states){
-		console.log("setRemoteBtnState(states)", states)
 		setRemoteBtnClass('remote-btn_set',   (!!states[0])?'enable':'disable');
 		setRemoteBtnClass('remote-btn_start', (!!states[1])?'enable':'disable');
 		setRemoteBtnClass('remote-btn_pause', (!!states[2])?'enable':'disable');
@@ -49,7 +60,6 @@ ready(function(){
 	}
 
 	function isTimeEmpty(data){
-		console.log("isTimeEmpty", data);
 		return !data.hour && !data.minute && !data.second;
 	}
 
@@ -95,7 +105,6 @@ ready(function(){
 		window.__FINISH_TIME__.setMinutes     (window.__FINISH_TIME__.getMinutes()      + Number(data.minute || 0));
 		window.__FINISH_TIME__.setSeconds     (window.__FINISH_TIME__.getSeconds()      + Number(data.second || 0));
 		window.__FINISH_TIME__.setMilliseconds(window.__FINISH_TIME__.getMilliseconds() + Number(data.millisec || 0));
-		console.log("__FINISH_TIME__", window.__FINISH_TIME__);
 
 		window.__TIME_RUNNER_INTERVAL__ = window.setInterval(function(){
 			var timeDiffMillisec = window.__FINISH_TIME__ - (new Date());
@@ -116,6 +125,10 @@ ready(function(){
 		document.body.classList.remove("timeup");
 	}
 
+	socket.on('onError', function(err) {
+		console.error(err)
+	});
+
 	socket.on('connect', function() { 
 		onConnectSocket();
 		console.log('Connected to server.'); 
@@ -131,7 +144,6 @@ ready(function(){
 	});
 
 	function onClockStateUpdate(data){
-		console.log("Update: ", data)
 		switch(data.code){
 			case '00':
 				setUpDurationTime(data, true);
@@ -219,31 +231,31 @@ ready(function(){
 		if(isTimeEmpty(data)){
 			alert("Time must not empty");
 		}else{
-			socket.emit('timer-event', {
+			emitMessage('timer-event', {
 				code: '00',
 				codeDesc:'timeUpdate', 
 				hour: txtHours.value, 
 				minute: txtMinutes.value, 
 				second:txtSecond.value, 
-				millisec: 0 
+				millisec: 0,
 			});
 		}
 	});
 
 	remoteAction('remote-btn_start', function(e){
-		socket.emit('timer-event', { code: '01',codeDesc:'timeStart' });
+		emitMessage('timer-event', { code: '01',codeDesc:'timeStart' });
 	});
 
 	remoteAction('remote-btn_pause', function(e){
-		socket.emit('timer-event', { code: '02',codeDesc:'timeStop' });
+		emitMessage('timer-event', { code: '02',codeDesc:'timeStop' });
 	});
 
 	remoteAction('remote-btn_stop', function(e){
-		socket.emit('timer-event', { code: '03',codeDesc:'timeReset' });
+		emitMessage('timer-event', { code: '03',codeDesc:'timeReset' });
 	});
 
 	document.getElementById('remote-displaytext').addEventListener('keyup', function(e){
-		socket.emit('message', e.target.value);
+		emitMessage('message', {message: e.target.value});
 	});
 
 	document.getElementById('remote-toggle_view').addEventListener('click', function(e){
@@ -259,5 +271,6 @@ ready(function(){
 
 	M.AutoInit();
 
+	window.authen = authen;
 	window.fitText(document.getElementById('remote-message_display'));
 });
