@@ -23,6 +23,17 @@ ready(function(){
 		document.querySelector(".fixed-action-btn").style = "display: block";
 	}
 
+	let darkmode = false;
+
+	function enableDarkmode() {
+		if (darkmode) return;
+
+		const soundtrackAudio = document.getElementById("soundtrack"); 
+		soundtrackAudio.play();
+
+		document.body.classList.add("darkmode");
+	}
+
 	function emitMessage(pipe, state) {
 		const authenPassword = localStorage.getItem("password") || "secret";
 		socket.emit(pipe, {...state, authenPassword});
@@ -72,6 +83,11 @@ ready(function(){
 		document.querySelector(".clock-display .minute")  .innerText = Number(data.minute   || 0)             .toFixed(0).padStart(2,'0');
 		document.querySelector(".clock-display .second")  .innerText = Number(data.second   || 0)             .toFixed(0).padStart(2,'0');
 		document.querySelector(".clock-display .millisec").innerText = Number(parseInt(data.millisec || 0)/10).toFixed(0).substr(0, 2).padStart(2,'0');
+
+		// start darkmode
+		if (data.minute === 8 && data.second === 10) {
+			enableDarkmode();
+		}
 
 		if(!!enableBtn){
 			setRemoteBtnState([ 1,!isTimeEmpty(data),0,0 ]);
