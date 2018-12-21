@@ -6,8 +6,10 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var port = process.env.PORT || 3000;
 
+const PASSWORD = process.env.COUNTDOWN_PASSWORD || "secret";
+
 server.listen(port, () => {
-	console.log('Server listening at port %d', port);
+	console.log('Server listening at port %d, authen password %s', port, PASSWORD);
 });
 
 // Routing
@@ -41,7 +43,13 @@ io.on('connection', (socket) => {
 	}
 
 	socket.on('timer-event', (data) => {
+		console.log("EIOEI", data)
+		if (data.authenPassword === undefined || data.authenPassword !== PASSWORD) {
+			return socket.emit('onError', { message: 'Authentication Error' });
+		}
+
 		console.log('timer-event <', data);	
+
 		if(data.code === '01'){ // Start
 			console.log("currentState", currentState.code);
 			if(currentState.code !== '00' && currentState.code !== '02')

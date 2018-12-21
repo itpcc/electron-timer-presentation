@@ -12,6 +12,11 @@ function ready(fn) {
 ready(function(){
 	const socket = io();
 
+	function emitMessage(pipe, state) {
+		const authenPassword = localStorage.getItem("password") || "secret";
+		socket.emit(pipe, {...state, authenPassword})
+	}
+
 	function onConnectSocket(){
 		socket.emit('currentStatus');
 	}
@@ -219,27 +224,27 @@ ready(function(){
 		if(isTimeEmpty(data)){
 			alert("Time must not empty");
 		}else{
-			socket.emit('timer-event', {
+			emitMessage('timer-event', {
 				code: '00',
 				codeDesc:'timeUpdate', 
 				hour: txtHours.value, 
 				minute: txtMinutes.value, 
 				second:txtSecond.value, 
-				millisec: 0 
+				millisec: 0,
 			});
 		}
 	});
 
 	remoteAction('remote-btn_start', function(e){
-		socket.emit('timer-event', { code: '01',codeDesc:'timeStart' });
+		emitMessage('timer-event', { code: '01',codeDesc:'timeStart' });
 	});
 
 	remoteAction('remote-btn_pause', function(e){
-		socket.emit('timer-event', { code: '02',codeDesc:'timeStop' });
+		emitMessage('timer-event', { code: '02',codeDesc:'timeStop' });
 	});
 
 	remoteAction('remote-btn_stop', function(e){
-		socket.emit('timer-event', { code: '03',codeDesc:'timeReset' });
+		emitMessage('timer-event', { code: '03',codeDesc:'timeReset' });
 	});
 
 	document.getElementById('remote-displaytext').addEventListener('keyup', function(e){
