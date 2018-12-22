@@ -85,7 +85,7 @@ ready(function(){
 		document.querySelector(".clock-display .millisec").innerText = Number(parseInt(data.millisec || 0)/10).toFixed(0).substr(0, 2).padStart(2,'0');
 
 		// start darkmode
-		if (data.minute === 8 && data.second === 10) {
+		if (data.hour === 0 && data.minute === 8 && data.second === 10) {
 			enableDarkmode();
 		}
 
