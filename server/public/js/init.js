@@ -34,6 +34,14 @@ ready(function(){
 		document.body.classList.add("darkmode");
 	}
 
+	function disableDarkMode(){
+		const soundtrackAudio = document.getElementById("soundtrack"); 
+		soundtrackAudio.currentTime = 0;
+		soundtrackAudio.pause();
+
+		document.body.classList.remove("darkmode");
+	}
+
 	function emitMessage(pipe, state) {
 		const authenPassword = localStorage.getItem("password") || "secret";
 		socket.emit(pipe, {...state, authenPassword});
@@ -112,6 +120,7 @@ ready(function(){
 		clearTimeRunner();
 		setUpDurationTime({});
 		setRemoteBtnState([ 1,0,0,0 ]);
+		disableDarkMode();
 		if(!!resetTimeUp)
 			document.body.classList.remove("timeup");
 	}
@@ -188,6 +197,8 @@ ready(function(){
 	socket.on('currentStatus', function(data){
 		onClockStateUpdate(data);
 		onMessageUpdate(data.message);
+		document.getElementById('remote-displaytext').value = data.message;
+
 		if(!!data.timeSet){
 			document.getElementById('remote-time_hour').value = data.timeSet.hour;
 			document.getElementById('remote-time_minute').value = data.timeSet.minute;
