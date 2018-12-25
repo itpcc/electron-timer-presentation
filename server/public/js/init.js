@@ -94,7 +94,7 @@ ready(function(){
 
 		// start darkmode
 		if (data.hour === 0 && data.minute === 8 && data.second === 10) {
-			enableDarkmode();
+			// enableDarkmode();
 		}
 
 		if(!!enableBtn){
