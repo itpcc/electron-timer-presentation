@@ -1,5 +1,6 @@
 window.__TIME_RUNNER_INTERVAL__ = 0;
 window.__FINISH_TIME__ = null;
+window.__DISPLAY_MODE__ = "present"; // or "workshop"
 
 function ready(fn) {
 	if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading"){
@@ -10,6 +11,11 @@ function ready(fn) {
 }
 
 ready(function(){
+	if(window.__DISPLAY_MODE__ === "present"){
+		document.querySelector(".hour").style = "display: none";
+		document.querySelector(".hour+.clock-separator").style = "display: none";
+		document.querySelector(".sponsors").style = "display: none";
+	}
 	const socket = io();
 
 	if (localStorage.getItem("password") !== null) {
