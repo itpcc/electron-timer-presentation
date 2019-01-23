@@ -1,6 +1,6 @@
 window.__TIME_RUNNER_INTERVAL__ = 0;
 window.__FINISH_TIME__ = null;
-window.__DISPLAY_MODE__ = "present"; // or "workshop"
+window.__DISPLAY_MODE__ = "workshop"; // or "workshop"
 
 function ready(fn) {
 	if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading"){
@@ -17,6 +17,35 @@ ready(function(){
 		document.querySelector(".sponsors").style = "display: none";
 	}
 	const socket = io();
+
+	// ----------------------------- timesync BEGIN -----------------------------
+	var ts = timesync.create({
+		server: socket,
+		interval: 1000
+	});
+	ts.on('sync', function (state) {
+		// console.log('sync ' + state + '');
+	});
+	ts.on('change', function (offset) {
+		console.log('changed offset: ' + offset + ' ms');
+	});
+	ts.send = function (socket, data, timeout) {
+		//console.log('send', data);
+		return new Promise(function (resolve, reject) {
+			var timeoutFn = setTimeout(reject, timeout);
+			socket.emit('timesync', data, function () {
+				clearTimeout(timeoutFn);
+				resolve();
+			});
+		});
+	};
+	function getCurrentTime(){
+		var currentTime = new Date(ts.now());
+		if(!currentTime || isNaN(currentTime))
+			currentTime = new Date();
+		return currentTime;
+	}
+	// ------------------------------ timesync END ------------------------------
 
 	if (localStorage.getItem("password") !== null) {
 		authen(localStorage.getItem("password"));
@@ -89,17 +118,20 @@ ready(function(){
 	}
 
 	function isTimeEmpty(data){
-		return !data.hour && !data.minute && !data.second;
+		if(!data.timeSet)
+			return true;
+		return !data.timeSet.hour && !data.timeSet.minute && !data.timeSet.second;
 	}
 
 	function setUpDurationTime(data, enableBtn){
-		document.querySelector(".clock-display .hour")    .innerText = Number(data.hour     || 0)             .toFixed(0).padStart(2,'0');
-		document.querySelector(".clock-display .minute")  .innerText = Number(data.minute   || 0)             .toFixed(0).padStart(2,'0');
-		document.querySelector(".clock-display .second")  .innerText = Number(data.second   || 0)             .toFixed(0).padStart(2,'0');
-		document.querySelector(".clock-display .millisec").innerText = Number(parseInt(data.millisec || 0)/10).toFixed(0).substr(0, 2).padStart(2,'0');
+		var timeSet = Object.assign({}, data.timeSet);
+		document.querySelector(".clock-display .hour")    .innerText = Number(timeSet.hour     || 0)             .toFixed(0).padStart(2,'0');
+		document.querySelector(".clock-display .minute")  .innerText = Number(timeSet.minute   || 0)             .toFixed(0).padStart(2,'0');
+		document.querySelector(".clock-display .second")  .innerText = Number(timeSet.second   || 0)             .toFixed(0).padStart(2,'0');
+		document.querySelector(".clock-display .millisec").innerText = Number(parseInt(timeSet.millisec || 0)/10).toFixed(0).substr(0, 2).padStart(2,'0');
 
 		// start darkmode
-		if (data.hour === 0 && data.minute === 8 && data.second === 10) {
+		if (timeSet.hour === 0 && timeSet.minute === 8 && timeSet.second === 10) {
 			// enableDarkmode();
 		}
 
@@ -115,6 +147,7 @@ ready(function(){
 	}
 
 	function pauseTime(data){
+		console.log("[pauseTime] data", data);
 		clearTimeRunner();
 		setUpDurationTime(data);
 		
@@ -135,20 +168,30 @@ ready(function(){
 		clearTimeRunner();
 		setUpDurationTime(data);
 		// Set finish line
-		window.__FINISH_TIME__ = new Date();
-		window.__FINISH_TIME__.setHours       (window.__FINISH_TIME__.getHours()        + Number(data.hour || 0));
-		window.__FINISH_TIME__.setMinutes     (window.__FINISH_TIME__.getMinutes()      + Number(data.minute || 0));
-		window.__FINISH_TIME__.setSeconds     (window.__FINISH_TIME__.getSeconds()      + Number(data.second || 0));
-		window.__FINISH_TIME__.setMilliseconds(window.__FINISH_TIME__.getMilliseconds() + Number(data.millisec || 0));
+		window.__FINISH_TIME__  = null;
+		// We use central time from server first.
+		if(typeof data.finishTime === "string" && !!data.finishTime)
+			window.__FINISH_TIME__ = new Date(data.finishTime);
+
+		// Just for fallback
+		if(!window.__FINISH_TIME__ || isNaN(window.__FINISH_TIME__)){
+			window.__FINISH_TIME__ = getCurrentTime();
+			window.__FINISH_TIME__.setHours       (window.__FINISH_TIME__.getHours()        + Number(data.timeSet.hour || 0));
+			window.__FINISH_TIME__.setMinutes     (window.__FINISH_TIME__.getMinutes()      + Number(data.timeSet.minute || 0));
+			window.__FINISH_TIME__.setSeconds     (window.__FINISH_TIME__.getSeconds()      + Number(data.timeSet.second || 0));
+			window.__FINISH_TIME__.setMilliseconds(window.__FINISH_TIME__.getMilliseconds() + Number(data.timeSet.millisec || 0));
+		}
 
 		window.__TIME_RUNNER_INTERVAL__ = window.setInterval(function(){
-			var timeDiffMillisec = window.__FINISH_TIME__ - (new Date());
+			var timeDiffMillisec = window.__FINISH_TIME__ - (getCurrentTime());
 			if(timeDiffMillisec > 0){
 				setUpDurationTime({
-					hour:   parseInt((timeDiffMillisec) / ( 1000  * 60    * 60)),
-					minute: parseInt((timeDiffMillisec) / ( 1000  * 60 )) % 60,
-					second: parseInt( timeDiffMillisec  /   1000) % 60,
-					millisec:         timeDiffMillisec  %   1000
+					timeSet: {
+						hour:   parseInt((timeDiffMillisec) / ( 1000  * 60    * 60)),
+						minute: parseInt((timeDiffMillisec) / ( 1000  * 60 )) % 60,
+						second: parseInt( timeDiffMillisec  /   1000) % 60,
+						millisec:         timeDiffMillisec  %   1000
+					}
 				});
 			}else{
 				document.body.classList.add("timeup");
@@ -179,6 +222,7 @@ ready(function(){
 	});
 
 	function onClockStateUpdate(data){
+		console.log("[onClockStateUpdate] data", data);
 		switch(data.code){
 			case '00':
 				setUpDurationTime(data, true);
@@ -196,7 +240,7 @@ ready(function(){
 	}
 
 	function onMessageUpdate(msg){
-		if(!!msg.length)
+		if(!!msg && !!msg.length)
 			document.getElementById('remote-message_display').innerText = msg;
 		document.getElementById('remote-message_display').dispatchEvent(window.__EVENT__FITTEXT__);
 	}
@@ -206,7 +250,7 @@ ready(function(){
 		document.getElementById('remote-displaytext').value = data.message;
 
 		if(!!data.timeSet){
-			document.getElementById('remote-time_hour').value = data.timeSet.hour;
+			document.getElementById('remote-time_hour').value   = data.timeSet.hour;
 			document.getElementById('remote-time_minute').value = data.timeSet.minute;
 			document.getElementById('remote-time_second').value = data.timeSet.second;
 		}
@@ -216,6 +260,11 @@ ready(function(){
 	socket.on('message', function(msg){
 		onMessageUpdate(msg);
 	});
+	socket.on('timesync', function (data) {
+		//console.log('receive', data);
+		ts.receive(null, data);
+	});
+
 
 	function skipToNext(e, elId){
 		if(e.key === "Enter" || e.key === "Tab"){
@@ -260,22 +309,17 @@ ready(function(){
 		var data = {
 			code: '00',
 			codeDesc:'timeUpdate', 
-			hour:   parseInt(txtHours.value), 
-			minute: parseInt(txtMinutes.value), 
-			second: parseInt(txtSecond.value), 
-			millisec: 0 
+			timeSet: {
+				hour:   parseInt(txtHours.value), 
+				minute: parseInt(txtMinutes.value), 
+				second: parseInt(txtSecond.value), 
+				millisec: 0 
+			}
 		};
 		if(isTimeEmpty(data)){
 			alert("Time must not empty");
 		}else{
-			emitMessage('timer-event', {
-				code: '00',
-				codeDesc:'timeUpdate', 
-				hour: txtHours.value, 
-				minute: txtMinutes.value, 
-				second:txtSecond.value, 
-				millisec: 0,
-			});
+			emitMessage('timer-event', data);
 		}
 	});
 
